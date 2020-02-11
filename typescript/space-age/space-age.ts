@@ -6,7 +6,7 @@ class SpaceAge {
     }
 
     private static normalizedYear = (years: number) => {
-        return Number((years / SpaceAge.EARTH_YEAR).toFixed(2))
+        return Number((years / SpaceAge.EARTH_YEAR).toFixed(2));
     }
 
     onEarth = ():number => SpaceAge.normalizedYear(this.seconds / 1);
