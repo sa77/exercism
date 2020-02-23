@@ -431,6 +431,8 @@ describe('vertical directions', () => {
       'lua',
     ])).toEqual(expectedResults)
   })
+
+  // this one
   xtest('should locate words written bottom left to top right', () => {
     const grid = [
       'jefblpepre',
@@ -487,6 +489,7 @@ describe('vertical directions', () => {
       'lisp',
     ])).toEqual(expectedResults)
   })
+
   xtest('should locate words written top right to bottom left', () => {
     const grid = [
       'jefblpepre',

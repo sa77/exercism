@@ -51,13 +51,13 @@ export default class WordSearch {
     return position;
   }
 
-  scanVerticalDown = (word: string): WordLocation => {
+  scanVerticalDown = (word: string, grid: string[] = this.letterGrid): WordLocation => {
     const wordLen: number = word.length
     let position: WordLocation = undefined;
     const firstChar = word[0]
     const lastChar = word[wordLen - 1]
 
-    this.letterGrid.some((gridRow, i) => {
+    grid.some((gridRow, i) => {
       gridRow.split('').some((c, j) =>{
         if (c === firstChar) {
           let tmpWord = ""
@@ -65,7 +65,7 @@ export default class WordSearch {
           const numRowsRemaining: number = this.numGridRows - i
           if (numRowsRemaining >= wordLen) {
             for (rowIndex; rowIndex < wordLen + i; rowIndex++) {
-              tmpWord += this.letterGrid[rowIndex][j]
+              tmpWord += grid[rowIndex][j]
             }
 
             if (tmpWord === word) {
@@ -88,8 +88,9 @@ export default class WordSearch {
     let position: WordLocation = undefined;
     const firstChar = word[0]
     const lastChar = word[wordLen - 1]
-    this.letterGrid = this.letterGrid.reverse()
-    position = this.scanVerticalDown(word)
+    // deep copy
+    const reversedGrid: string[] = Array.from(this.letterGrid).reverse()
+    position = this.scanVerticalDown(word, reversedGrid)
     if (position) {
       const _start: [number, number] = position['start']
       const _end: [number, number] = position['end']
@@ -101,14 +102,14 @@ export default class WordSearch {
     return position;
   }
 
-  scanTopLeftToBottomRight = (word: string): WordLocation => {
+  scanTopLeftToBottomRight = (word: string, grid: string[] = this.letterGrid): WordLocation => {
     const wordLen: number = word.length
     const firstChar = word[0]
     const lastChar = word[wordLen - 1]
 
     let position: WordLocation = undefined;
 
-    this.letterGrid.some((gridRow, i) => {
+    grid.some((gridRow, i) => {
       gridRow.split('').some((c, j) => {
         if (c === firstChar) {
           let tmpWord = ""
@@ -116,8 +117,10 @@ export default class WordSearch {
           const numRowsRemaining: number = this.numGridRows - i
           if (numRowsRemaining >= wordLen) {
             for(cursor; cursor < wordLen + i; cursor++) {
-              tmpWord += this.letterGrid[cursor][cursor]
+              // gridRow
+              tmpWord += grid[cursor][cursor]
             }
+            console.log(word, tmpWord, cursor, i, j)
             if (word === tmpWord) {
               position = {
                 start: [i + 1, j + 1],
@@ -132,6 +135,21 @@ export default class WordSearch {
     return position;
   }
 
+  scanBottomLeftToTopRight = (word: string): WordLocation => {
+    const wordLen: number = word.length
+    const firstChar = word[0]
+    const lastChar = word[wordLen - 1]
+
+    let position: WordLocation = undefined;
+    // deep copy
+    const reversedGrid: string[] = Array.from(this.letterGrid).reverse()
+    console.log('flipped --', this.letterGrid, reversedGrid, word)
+    position = this.scanTopLeftToBottomRight(word, reversedGrid);
+
+    return position;
+  }
+
+
   public find(words: string[]): WordSearchResult {
     const outcome: WordSearchResult = {}
 
@@ -145,6 +163,9 @@ export default class WordSearch {
             outcome[word] = this.scanVerticalUp(word)
             if (!outcome[word]) {
               outcome[word] = this.scanTopLeftToBottomRight(word)
+              if (!outcome[word]) {
+                outcome[word] = this.scanBottomLeftToTopRight(word)
+              }
             }
           }
         }
